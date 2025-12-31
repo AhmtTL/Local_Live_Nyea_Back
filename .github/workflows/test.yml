@@ -1,4 +1,4 @@
-name: Deploy NYEA - Backend to Azure VM
+name: Deploy LOCAL DEVELOPMENT NYEA - Backend to Azure VM
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
           key: ${{ secrets.AZURE_SSH_KEY_TEST }}
           script: |
             echo ">>> Switching to project directory"
-            cd /var/www/laravel/nyea-backend
+            cd /var/www/laravel/Local_Live_Nyea_Back
             echo ">>> Fixing ownership for git pull"
             sudo chown -R $USER:$USER storage bootstrap/cache
             echo ">>> Pulling latest changes"

@@ -1,9 +1,9 @@
-name: Deploy LOCAL - NYEA - Backend to Azure VM
+name: Deploy LOCAL MAIN - NYEA - Backend to Azure VM
 
 on:
   push:
     branches:
-      - development
+      - main
 
 jobs:
   deploy:
