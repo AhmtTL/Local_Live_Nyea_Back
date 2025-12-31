@@ -3,7 +3,7 @@ name: Deploy LOCAL MAIN - NYEA - Backend to Azure VM
 on:
   push:
     branches:
-      - main
+      - development
 
 jobs:
   deploy:
@@ -14,17 +14,17 @@ jobs:
       - name: Deploy to Azure VM via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.AZURE_HOST }}
-          username: ${{ secrets.AZURE_USER }}
+          host: ${{ secrets.AZURE_HOST}}
+          username: ${{ secrets.AZURE_USER}}
           key: ${{ secrets.AZURE_SSH_KEY }}
           script: |
             echo ">>> Switching to project directory"
-            cd /var/www/nyea-backend
+            cd /var/www/laravel/Local_Live_Nyea_Back
             echo ">>> Fixing ownership for git pull"
             sudo chown -R $USER:$USER storage bootstrap/cache
             echo ">>> Pulling latest changes"
             git reset --hard
-            git pull origin main
+            git pull origin development
             echo ">>> Installing dependencies"
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
             echo ">>> Running migrations"
