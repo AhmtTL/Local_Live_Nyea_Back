@@ -24,7 +24,7 @@ jobs:
             sudo chown -R $USER:$USER storage bootstrap/cache
             echo ">>> Pulling latest changes"
             git reset --hard
-            git pull origin development
+            git pull origin main
             echo ">>> Installing dependencies"
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
             echo ">>> Running migrations"
