@@ -1,0 +1,56 @@
+# Laravel
+/vendor/
+/node_modules/
+/public/storage
+/storage/*.key
+/.env
+Homestead.json
+Homestead.yaml
+.phpunit.result.cache
+/storage/app/public
+/storage/framework/cache/data
+/storage/logs
+/storage/framework/sessions
+/storage/framework/views
+/storage/framework/testing
+
+# Laravel Mix
+/public/hot
+/public/build
+/public/mix-manifest.json
+
+# Composer
+composer.lock
+
+# NPM/Yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite
+/.vite
+
+# IDEs and editors
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Mac system files
+.DS_Store
+
+# Node.js
+/node_modules/
+/dist/
+/build/
+
+# Log files
+*.log
+
+# Coverage
+/coverage/
+
+# Misc
+*.local
+
+*.pem

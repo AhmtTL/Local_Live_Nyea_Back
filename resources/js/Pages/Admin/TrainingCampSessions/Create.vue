@@ -1,0 +1,875 @@
+<script setup>
+import { useAdminLayout } from "@/Composables/useAdminLayout";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Head, useForm, Link } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
+
+const props = defineProps({
+    trainingCamps: Array,
+    schools: Array,
+});
+
+const { Layout } = useAdminLayout();
+
+const form = useForm({
+    program_id: "",
+    program_type: "none",
+    school_id: "",
+    new_school_name: "",
+    location: "",
+    city: "",
+    country: "",
+    country_code: "",
+    venue_name: "",
+    organization_logo: "",
+    venue_address: "",
+    location_highlights: [],
+    date: "",
+    start_date: "",
+    end_date: "",
+    // time: '',
+    timezone: "",
+    available_spots: 25,
+    booked_spots: 0,
+    // price_override: '',
+    is_active: false,
+    is_featured: false,
+    special_notes: "",
+    metadata: {},
+});
+
+const newHighlight = ref("");
+const logoUploading = ref(false);
+const logoPreview = ref("");
+
+const addHighlight = () => {
+    if (newHighlight.value.trim()) {
+        form.location_highlights.push(newHighlight.value.trim());
+        newHighlight.value = "";
+    }
+};
+
+const removeHighlight = (index) => {
+    form.location_highlights.splice(index, 1);
+};
+
+const handleLogoUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    logoUploading.value = true;
+
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("type", "organization");
+
+    try {
+        const response = await fetch("/admin/images/upload", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+            },
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            form.organization_logo = result.data.url;
+            logoPreview.value = result.data.url;
+        } else {
+            alert("Logo upload failed: " + result.message);
+        }
+    } catch (error) {
+        alert("Logo upload failed: " + error.message);
+    } finally {
+        logoUploading.value = false;
+    }
+};
+
+const removeLogo = () => {
+    form.organization_logo = "";
+    logoPreview.value = "";
+};
+
+// Clear new school name when existing school is selected
+const clearNewSchoolWhenExistingSelected = () => {
+    if (form.school_id) {
+        form.new_school_name = "";
+    }
+};
+
+// Clear school selection when new school name is entered
+const clearSchoolWhenNewNameEntered = () => {
+    if (form.new_school_name.trim()) {
+        form.school_id = "";
+    }
+};
+
+const submitAsDraft = () => {
+    form.is_active = false;
+    form.post(route("admin.training-camp-sessions.store"));
+};
+
+const submitAndPublish = () => {
+    form.is_active = true;
+    form.post(route("admin.training-camp-sessions.store"));
+};
+
+const selectedTrainingCamp = computed(() => {
+    return props.trainingCamps.find(
+        (tc) => tc.id === parseInt(form.program_id)
+    );
+});
+</script>
+
+<template>
+    <Head title="Create Training Camp Session" />
+
+    <component :is="Layout">
+        <div class="py-12">
+            <div class="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 bg-white border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">
+                                    Create Training Camp Session
+                                </h2>
+                                <p class="text-gray-600 mt-1">
+                                    Add a new session for a training camp in a
+                                    specific location
+                                </p>
+                            </div>
+                            <Link
+                                :href="
+                                    route('admin.training-camp-sessions.index')
+                                "
+                                class="text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors"
+                            >
+                                ← Back to Sessions
+                            </Link>
+                        </div>
+
+                        <form @submit.prevent="submit" class="space-y-8">
+                            <!-- Training Camp Selection -->
+                            <div
+                                class="bg-orange-50 border border-orange-200 rounded-lg p-6"
+                            >
+                                <h3
+                                    class="text-lg font-semibold text-orange-900 mb-4"
+                                >
+                                    🏕️ Training Camp Selection
+                                </h3>
+                                <div>
+                                    <InputLabel
+                                        for="program_id"
+                                        value="Select Training Camp Program"
+                                    />
+                                    <select
+                                        id="program_id"
+                                        v-model="form.program_id"
+                                        class="mt-1 block w-full border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm"
+                                        required
+                                    >
+                                        <option value="">
+                                            Choose a training camp...
+                                        </option>
+                                        <option
+                                            v-for="trainingCamp in trainingCamps"
+                                            :key="trainingCamp.id"
+                                            :value="trainingCamp.id"
+                                        >
+                                            {{ trainingCamp.title }} (Base: ${{
+                                                trainingCamp.base_price
+                                            }})
+                                        </option>
+                                    </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.program_id"
+                                    />
+
+                                    <div
+                                        v-if="selectedTrainingCamp"
+                                        class="mt-3 p-3 bg-white border border-orange-200 rounded"
+                                    >
+                                        <div class="text-sm text-orange-800">
+                                            <strong>Selected:</strong>
+                                            {{ selectedTrainingCamp.title }}
+                                        </div>
+                                        <div
+                                            class="text-xs text-orange-600 mt-1"
+                                        >
+                                            Base Price: ${{
+                                                selectedTrainingCamp.base_price
+                                            }}
+                                            • You can override this price for
+                                            this specific session
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Program Type Selection -->
+                            <!-- <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-amber-900 mb-4">👑 Program Type</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <InputLabel for="program_type" value="Program Type *" />
+                                        <select id="program_type" v-model="form.program_type"
+                                            class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm"
+                                            required>
+                                            <option value="essentials">⚡ Essentials Program</option>
+                                            <option value="mastery">👑 Mastery Program</option>
+                                        </select>
+                                        <InputError class="mt-2" :message="form.errors.program_type" />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            <span v-if="form.program_type === 'essentials'">Standard program with core
+                                                content</span>
+                                            <span v-if="form.program_type === 'mastery'">Premium program with extended
+                                                content and intensive training</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                            <!-- School Selection -->
+                            <div
+                                class="bg-indigo-50 border border-indigo-200 rounded-lg p-6"
+                            >
+                                <h3
+                                    class="text-lg font-semibold text-indigo-900 mb-4"
+                                >
+                                    🏫 School Selection
+                                </h3>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <InputLabel
+                                            for="school_id"
+                                            value="Select School (Optional)"
+                                        />
+                                        <select
+                                            id="school_id"
+                                            v-model="form.school_id"
+                                            @change="
+                                                clearNewSchoolWhenExistingSelected
+                                            "
+                                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        >
+                                            <option value="">
+                                                Select an existing school...
+                                            </option>
+                                            <option
+                                                v-for="school in schools"
+                                                :key="school.id"
+                                                :value="school.id"
+                                            >
+                                                {{ school.name }}
+                                            </option>
+                                        </select>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.school_id"
+                                        />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            Choose from existing schools or
+                                            create a new one below
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="new_school_name"
+                                            value="Or Create New School"
+                                        />
+                                        <TextInput
+                                            id="new_school_name"
+                                            v-model="form.new_school_name"
+                                            type="text"
+                                            @input="
+                                                clearSchoolWhenNewNameEntered
+                                            "
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., Harvard Business School"
+                                            :disabled="!!form.school_id"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="
+                                                form.errors.new_school_name
+                                            "
+                                        />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            <span v-if="form.school_id"
+                                                >Clear the school selection
+                                                above to create a new
+                                                school</span
+                                            >
+                                            <span v-else
+                                                >Enter a new school name to
+                                                create it automatically</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Location Details -->
+                            <div
+                                class="bg-green-50 border border-green-200 rounded-lg p-6"
+                            >
+                                <h3
+                                    class="text-lg font-semibold text-green-900 mb-4"
+                                >
+                                    📍 Location Details
+                                </h3>
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                >
+                                    <div>
+                                        <InputLabel
+                                            for="location"
+                                            value="Location Name *"
+                                        />
+                                        <TextInput
+                                            id="location"
+                                            v-model="form.location"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., NYEA Mountain Training Center"
+                                            required
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.location"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel for="city" value="City" />
+                                        <TextInput
+                                            id="city"
+                                            v-model="form.city"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., Colorado Springs"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.city"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="country"
+                                            value="Country"
+                                        />
+                                        <TextInput
+                                            id="country"
+                                            v-model="form.country"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., United States"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.country"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="country_code"
+                                            value="Country Code"
+                                        />
+                                        <TextInput
+                                            id="country_code"
+                                            v-model="form.country_code"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., USA"
+                                            maxlength="3"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.country_code"
+                                        />
+                                    </div>
+
+                                    <div class="md:col-span-2">
+                                        <InputLabel
+                                            for="venue_name"
+                                            value="Venue Name"
+                                        />
+                                        <TextInput
+                                            id="venue_name"
+                                            v-model="form.venue_name"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., Mountain Leadership Center"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.venue_name"
+                                        />
+                                    </div>
+
+                                    <div class="md:col-span-2">
+                                        <InputLabel
+                                            for="venue_address"
+                                            value="Venue Address"
+                                        />
+                                        <textarea
+                                            id="venue_address"
+                                            v-model="form.venue_address"
+                                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm"
+                                            rows="2"
+                                            placeholder="e.g., 123 Mountain View Drive, Colorado Springs, CO 80919"
+                                        ></textarea>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.venue_address"
+                                        />
+                                    </div>
+
+                                    <!-- Organization Logo Upload -->
+                                    <div class="md:col-span-2">
+                                        <InputLabel
+                                            for="organization_logo"
+                                            value="Organization Logo"
+                                        />
+                                        <div class="mt-2 space-y-3">
+                                            <!-- Current Logo Preview -->
+                                            <div
+                                                v-if="logoPreview"
+                                                class="flex items-center space-x-4"
+                                            >
+                                                <div class="flex-shrink-0">
+                                                    <img
+                                                        :src="logoPreview"
+                                                        alt="Organization Logo"
+                                                        class="h-16 w-16 object-contain border border-gray-300 rounded-lg bg-white p-2"
+                                                    />
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p
+                                                        class="text-sm text-gray-600"
+                                                    >
+                                                        Current organization
+                                                        logo
+                                                    </p>
+                                                    <button
+                                                        type="button"
+                                                        @click="removeLogo"
+                                                        class="mt-1 text-red-600 hover:text-red-800 text-sm"
+                                                    >
+                                                        Remove Logo
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Upload Button -->
+                                            <div
+                                                class="flex items-center space-x-4"
+                                            >
+                                                <label
+                                                    for="logo_upload"
+                                                    class="cursor-pointer bg-white border border-gray-300 rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                    :class="{
+                                                        'opacity-50':
+                                                            logoUploading,
+                                                    }"
+                                                >
+                                                    <span v-if="logoUploading"
+                                                        >🔄 Uploading...</span
+                                                    >
+                                                    <span v-else
+                                                        >📁
+                                                        {{
+                                                            logoPreview
+                                                                ? "Change Logo"
+                                                                : "Upload Logo"
+                                                        }}</span
+                                                    >
+                                                </label>
+                                                <input
+                                                    id="logo_upload"
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/svg+xml"
+                                                    @change="handleLogoUpload"
+                                                    class="hidden"
+                                                    :disabled="logoUploading"
+                                                />
+                                                <div
+                                                    class="text-xs text-gray-500"
+                                                >
+                                                    Max 2MB • JPEG, PNG, SVG,
+                                                    WebP supported<br />
+                                                    Images are automatically
+                                                    resized to 64x64px
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="
+                                                form.errors.organization_logo
+                                            "
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Location Highlights -->
+                                <div class="mt-6">
+                                    <InputLabel value="Location Highlights" />
+                                    <div class="mt-2 space-y-2">
+                                        <div class="flex gap-2">
+                                            <TextInput
+                                                v-model="newHighlight"
+                                                type="text"
+                                                class="flex-1"
+                                                placeholder="e.g., Mountain Adventure Training"
+                                                @keyup.enter="addHighlight"
+                                            />
+                                            <button
+                                                type="button"
+                                                @click="addHighlight"
+                                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors"
+                                            >
+                                                Add
+                                            </button>
+                                        </div>
+                                        <div
+                                            v-if="
+                                                form.location_highlights
+                                                    .length > 0
+                                            "
+                                            class="flex flex-wrap gap-2"
+                                        >
+                                            <span
+                                                v-for="(
+                                                    highlight, index
+                                                ) in form.location_highlights"
+                                                :key="index"
+                                                class="inline-flex items-center bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full border border-green-200"
+                                            >
+                                                ⛰️ {{ highlight }}
+                                                <button
+                                                    type="button"
+                                                    @click="
+                                                        removeHighlight(index)
+                                                    "
+                                                    class="ml-2 text-green-600 hover:text-green-800"
+                                                >
+                                                    ×
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1 text-xs text-gray-600">
+                                        Add special features or activities for
+                                        this training camp location
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule & Capacity -->
+                            <div
+                                class="bg-orange-50 border border-orange-200 rounded-lg p-6"
+                            >
+                                <h3
+                                    class="text-lg font-semibold text-orange-900 mb-4"
+                                >
+                                    📅 Schedule & Capacity
+                                </h3>
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                >
+                                    <div>
+                                        <InputLabel
+                                            for="date"
+                                            value="Primary Date *"
+                                        />
+                                        <TextInput
+                                            id="date"
+                                            v-model="form.date"
+                                            type="date"
+                                            class="mt-1 block w-full"
+                                            required
+                                        />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            Main session date for listings
+                                        </div>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.date"
+                                        />
+                                    </div>
+
+                                    <!-- <div>
+                                        <InputLabel for="time" value="Time *" />
+                                        <TextInput id="time" v-model="form.time" type="text" class="mt-1 block w-full"
+                                            placeholder="e.g., 7:00 AM - 9:00 PM MST" required />
+                                        <InputError class="mt-2" :message="form.errors.time" />
+                                    </div> -->
+
+                                    <div>
+                                        <InputLabel
+                                            for="start_date"
+                                            value="Camp Start Date (Optional)"
+                                        />
+                                        <TextInput
+                                            id="start_date"
+                                            v-model="form.start_date"
+                                            type="date"
+                                            class="mt-1 block w-full"
+                                        />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            For multi-day training camps
+                                        </div>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.start_date"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="end_date"
+                                            value="Camp End Date (Optional)"
+                                        />
+                                        <TextInput
+                                            id="end_date"
+                                            v-model="form.end_date"
+                                            type="date"
+                                            class="mt-1 block w-full"
+                                        />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            For multi-day training camps
+                                        </div>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.end_date"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="timezone"
+                                            value="Timezone"
+                                        />
+                                        <TextInput
+                                            id="timezone"
+                                            v-model="form.timezone"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            placeholder="e.g., America/Denver"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.timezone"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="available_spots"
+                                            value="Available Spots *"
+                                        />
+                                        <TextInput
+                                            id="available_spots"
+                                            v-model="form.available_spots"
+                                            type="number"
+                                            min="1"
+                                            max="1000"
+                                            class="mt-1 block w-full"
+                                            required
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="
+                                                form.errors.available_spots
+                                            "
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <InputLabel
+                                            for="booked_spots"
+                                            value="Already Booked"
+                                        />
+                                        <TextInput
+                                            id="booked_spots"
+                                            v-model="form.booked_spots"
+                                            type="number"
+                                            min="0"
+                                            class="mt-1 block w-full"
+                                        />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            Usually starts at 0 for new sessions
+                                        </div>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.booked_spots"
+                                        />
+                                    </div>
+
+                                    <!-- <div>
+                                        <InputLabel for="price_override" value="Session Price Override" />
+                                        <TextInput id="price_override" v-model="form.price_override" type="number"
+                                            step="0.01" min="0" class="mt-1 block w-full"
+                                            :placeholder="selectedTrainingCamp ? `Leave empty to use base price ($${selectedTrainingCamp.base_price})` : 'Override training camp base price'" />
+                                        <div class="mt-1 text-xs text-gray-600">
+                                            Leave empty to use the training camp's base price
+                                            <span v-if="selectedTrainingCamp" class="font-semibold">(${{
+                                                selectedTrainingCamp.base_price }})</span>
+                                        </div>
+                                        <InputError class="mt-2" :message="form.errors.price_override" />
+                                    </div> -->
+                                </div>
+                            </div>
+
+                            <!-- Additional Settings -->
+                            <div
+                                class="bg-purple-50 border border-purple-200 rounded-lg p-6"
+                            >
+                                <h3
+                                    class="text-lg font-semibold text-purple-900 mb-4"
+                                >
+                                    ⚙️ Additional Settings
+                                </h3>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <InputLabel
+                                            for="special_notes"
+                                            value="Special Notes"
+                                        />
+                                        <textarea
+                                            id="special_notes"
+                                            v-model="form.special_notes"
+                                            class="mt-1 block w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-md shadow-sm"
+                                            rows="3"
+                                            placeholder="Any special information about this training camp session..."
+                                        ></textarea>
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.special_notes"
+                                        />
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <label class="flex items-center">
+                                            <input
+                                                v-model="form.is_featured"
+                                                type="checkbox"
+                                                class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+                                            />
+                                            <span
+                                                class="ml-2 text-sm text-gray-700"
+                                                >Featured Session ⭐</span
+                                            >
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="flex items-center justify-between">
+                                <Link
+                                    :href="
+                                        route(
+                                            'admin.training-camp-sessions.index'
+                                        )
+                                    "
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+                                >
+                                    <svg
+                                        class="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        ></path>
+                                    </svg>
+                                    Cancel
+                                </Link>
+
+                                <div class="flex items-center gap-3">
+                                    <button
+                                        @click="submitAsDraft"
+                                        :disabled="form.processing"
+                                        :class="{
+                                            'opacity-50 cursor-not-allowed':
+                                                form.processing,
+                                        }"
+                                        class="inline-flex items-center gap-2 px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                                    >
+                                        <svg
+                                            class="w-4 h-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                            ></path>
+                                        </svg>
+                                        <span v-if="form.processing"
+                                            >Saving...</span
+                                        >
+                                        <span v-else>📝 Save as Draft</span>
+                                    </button>
+
+                                    <button
+                                        @click="submitAndPublish"
+                                        :disabled="form.processing"
+                                        :class="{
+                                            'opacity-50 cursor-not-allowed':
+                                                form.processing,
+                                        }"
+                                        class="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5"
+                                    >
+                                        <svg
+                                            class="w-4 h-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                                            ></path>
+                                        </svg>
+                                        <span v-if="form.processing"
+                                            >Publishing...</span
+                                        >
+                                        <span v-else>🚀 Create & Publish</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </component>
+</template>

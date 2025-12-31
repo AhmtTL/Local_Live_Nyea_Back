@@ -1,0 +1,57 @@
+name: Deploy LOCAL - NYEA - Backend to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Deploy to Azure VM via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_USER }}
+          key: ${{ secrets.AZURE_SSH_KEY }}
+          script: |
+            echo ">>> Switching to project directory"
+            cd /var/www/nyea-backend
+            echo ">>> Fixing ownership for git pull"
+            sudo chown -R $USER:$USER storage bootstrap/cache
+            echo ">>> Pulling latest changes"
+            git reset --hard
+            git pull origin main
+            echo ">>> Installing dependencies"
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            echo ">>> Running migrations"
+            php artisan migrate --force
+            echo ">>> Resetting log file"
+            sudo rm -f storage/logs/laravel.log
+            sudo touch storage/logs/laravel.log
+            sudo chown www-data:www-data storage/logs/laravel.log
+            sudo chmod 664 storage/logs/laravel.log
+            echo ">>> Rebuilding caches"
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan view:clear
+            php artisan optimize
+            php artisan route:clear
+            echo ">>> Fixing permissions"
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+            echo ">>> Fixing Passport keys"
+            if [ -f storage/oauth-private.key ] && [ -f storage/oauth-public.key ]; then
+                sudo chown www-data:www-data storage/oauth-private.key storage/oauth-public.key
+                sudo chmod 600 storage/oauth-private.key storage/oauth-public.key
+            fi
+            echo ">>> Building frontend assets"
+            npm install --legacy-peer-deps
+            npm run build
+            git add .
+            git commit -m "Rebuild frontend assets [skip ci]" || echo "No changes to commit"
+            git push origin main || echo "No changes to push"
+            echo ">>> Deployment completed successfully"
