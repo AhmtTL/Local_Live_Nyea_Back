@@ -376,7 +376,7 @@ const _ = { install(t3, e2) {
   const o2 = (t4, o3, n2, r2 = e2) => D(t4, o3, n2, r2);
   parseInt(t3.version) > 2 ? (t3.config.globalProperties.route = o2, t3.provide("route", o2)) : t3.mixin({ methods: { route: o2 } });
 } };
-const appName = "Admin - NYEA";
+const appName = "NY Empire Academy";
 createServer(
   (page) => createInertiaApp({
     page,
