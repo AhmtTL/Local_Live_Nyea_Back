@@ -38,7 +38,8 @@ const getStatusBadgeClass = (status) => {
     <AdminLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                LOCAL LIVE Dashboard
+                LOCAL LIVE Dashboard TEST
+
             </h2>
         </template>
 
