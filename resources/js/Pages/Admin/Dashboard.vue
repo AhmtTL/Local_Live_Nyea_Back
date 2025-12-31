@@ -38,7 +38,7 @@ const getStatusBadgeClass = (status) => {
     <AdminLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                LOCAL LIVE Dashboard TEST LIVE
+                LOCAL LIVE Dashboard
 
             </h2>
         </template>
@@ -378,7 +378,7 @@ const getStatusBadgeClass = (status) => {
                         <h3
                             class="text-lg leading-6 font-medium text-gray-900 mb-4"
                         >
-                            Revenue by Program TEST LOCAL LIVE
+                            Revenue by Program TEST
                         </h3>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">

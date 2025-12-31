@@ -26,7 +26,7 @@ const dropdownItems = [
         logo-route="admin.dashboard"
         logo-src="/images/logo.svg"
         logo-alt="NY Empire Academy"
-        title="Admin Panel"
+        title="Admin Panel LOCAL LIVE"
         :navigation-items="navigationItems"
         :dropdown-items="dropdownItems"
     >
