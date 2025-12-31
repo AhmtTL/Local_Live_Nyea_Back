@@ -1,4 +1,4 @@
-name: Deploy NYEA - Backend to Azure VM
+name: Deploy LOCAL DEVELOPMENT NYEA - Backend to Azure VM
 
 on:
   push:
