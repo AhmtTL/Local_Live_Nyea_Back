@@ -40,10 +40,10 @@ const _sfc_main = {
       _push(ssrRenderComponent(_sfc_main$1, null, {
         header: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<h2 class="text-xl font-semibold leading-tight text-gray-800"${_scopeId}> Dashboard </h2>`);
+            _push2(`<h2 class="text-xl font-semibold leading-tight text-gray-800"${_scopeId}> Admin Dashboard Live Local </h2>`);
           } else {
             return [
-              createVNode("h2", { class: "text-xl font-semibold leading-tight text-gray-800" }, " Dashboard ")
+              createVNode("h2", { class: "text-xl font-semibold leading-tight text-gray-800" }, " Admin Dashboard Live Local ")
             ];
           }
         }),
@@ -148,7 +148,7 @@ const _sfc_main = {
               }),
               _: 1
             }, _parent2, _scopeId));
-            _push2(`</div></div></div></div><div class="mt-8 bg-white overflow-hidden shadow rounded-lg"${_scopeId}><div class="p-6"${_scopeId}><h3 class="text-lg leading-6 font-medium text-gray-900 mb-4"${_scopeId}> Revenue by Program Test </h3><div class="overflow-x-auto"${_scopeId}><table class="min-w-full divide-y divide-gray-200"${_scopeId}><thead class="bg-gray-50"${_scopeId}><tr${_scopeId}><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"${_scopeId}> Program </th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"${_scopeId}> Sales </th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"${_scopeId}> Revenue </th></tr></thead><tbody class="bg-white divide-y divide-gray-200"${_scopeId}><!--[-->`);
+            _push2(`</div></div></div></div><div class="mt-8 bg-white overflow-hidden shadow rounded-lg"${_scopeId}><div class="p-6"${_scopeId}><h3 class="text-lg leading-6 font-medium text-gray-900 mb-4"${_scopeId}> Revenue by Program Live Local </h3><div class="overflow-x-auto"${_scopeId}><table class="min-w-full divide-y divide-gray-200"${_scopeId}><thead class="bg-gray-50"${_scopeId}><tr${_scopeId}><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"${_scopeId}> Program </th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"${_scopeId}> Sales </th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"${_scopeId}> Revenue </th></tr></thead><tbody class="bg-white divide-y divide-gray-200"${_scopeId}><!--[-->`);
             ssrRenderList(__props.revenue_by_program, (item) => {
               var _a;
               _push2(`<tr${_scopeId}><td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"${_scopeId}>${ssrInterpolate(((_a = item.program) == null ? void 0 : _a.title) || "Unknown Program")}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"${_scopeId}>${ssrInterpolate(item.total_sales)}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"${_scopeId}>${ssrInterpolate(formatCurrency(
@@ -407,7 +407,7 @@ const _sfc_main = {
                   ]),
                   createVNode("div", { class: "mt-8 bg-white overflow-hidden shadow rounded-lg" }, [
                     createVNode("div", { class: "p-6" }, [
-                      createVNode("h3", { class: "text-lg leading-6 font-medium text-gray-900 mb-4" }, " Revenue by Program Test "),
+                      createVNode("h3", { class: "text-lg leading-6 font-medium text-gray-900 mb-4" }, " Revenue by Program Live Local "),
                       createVNode("div", { class: "overflow-x-auto" }, [
                         createVNode("table", { class: "min-w-full divide-y divide-gray-200" }, [
                           createVNode("thead", { class: "bg-gray-50" }, [
