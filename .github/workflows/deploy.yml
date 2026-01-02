@@ -3,7 +3,7 @@ name: Deploy LOCAL MAIN - NYEA - Backend to Azure VM
 on:
   push:
     branches:
-      - main
+      - main   ## change if your default branch is different 
 
 jobs:
   deploy:
