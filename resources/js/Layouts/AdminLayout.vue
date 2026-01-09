@@ -7,6 +7,7 @@ const navigationItems = [
     // { label: 'Influencers', route: 'admin.influencers.index', active: 'admin.influencers.*' },
     { label: 'Programs', route: 'admin.programs.index', active: 'admin.programs.*' },
     { label: 'Referrals', route: 'admin.referrals.index', active: 'admin.referrals.*' },
+    { label: 'Resource Sessions', route: 'admin.resource-sessions.index', active: 'admin.resource-sessions.*' },
     { label: 'Workshop Sessions', route: 'admin.workshop-sessions.index', active: 'admin.workshop-sessions.*' },
     { label: 'Training Camp Sessions', route: 'admin.training-camp-sessions.index', active: 'admin.training-camp-sessions.*' },
     { label: 'Registrations', route: 'admin.registrations.index', active: 'admin.registrations.*' },
@@ -26,7 +27,7 @@ const dropdownItems = [
         logo-route="admin.dashboard"
         logo-src="/images/logo.svg"
         logo-alt="NY Empire Academy"
-        title="Admin Panel LIVE"
+        title="Admin Panel"
         :navigation-items="navigationItems"
         :dropdown-items="dropdownItems"
     >
@@ -36,4 +37,4 @@ const dropdownItems = [
         
         <slot />
     </BaseLayout>
-</template> 
+</template>

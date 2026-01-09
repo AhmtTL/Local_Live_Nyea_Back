@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Services;
 
 use App\Models\Payment;
@@ -13,6 +14,7 @@ use App\Mail\WorkshopRegistrationMail;
 use App\Mail\TrainingCampRegistrationMail;
 use App\Models\TrainingCampSession;
 use App\Models\WorkshopSession;
+
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Stripe\Customer;
@@ -207,6 +209,7 @@ class StripeService
 
                 logger()->info('Payment status updated', [$payment->id, $newStatus]);
 
+
                 // Update workshop session availability if payment was successful
                 if (($oldStatus !== 'paid') && ($newStatus === 'paid' || $newStatus === 'no_payment_required')) {
                     // Payment was just confirmed as successful
@@ -242,6 +245,23 @@ class StripeService
 
                             // Track referral conversion after email is sent
                             $this->trackReferralConversion($payment);
+                        }
+                    }
+
+                    // Resource program registration and email
+                    if ($payment->resource_program_id) {
+                        $resourceProgram = \App\Models\ResourceProgram::find($payment->resource_program_id);
+                        if ($resourceProgram) {
+                            // Calculate quantity from metadata or default to 1
+                            $quantity = $payment->metadata['quantity'] ?? 1;
+
+                            // If you have a booked_spots or similar stat, increment it
+                            if (isset($resourceProgram->booked_spots)) {
+                                $resourceProgram->increment('booked_spots', $quantity);
+                            }
+
+                            // Create resource program registration and send email
+                            $this->createResourceProgramRegistrationAndSendEmail($payment);
                         }
                     }
 
@@ -480,9 +500,10 @@ class StripeService
             $invoicePayload['days_until_due'] = 7;
         }
 
+
         $invoice = Invoice::create($invoicePayload);
         $invoice = $invoice->finalizeInvoice();
-        Invoice::sendInvoice($invoice->id);
+        $invoice->sendInvoice();
 
         $balancePayment->update([
             'stripe_invoice_id' => $invoice->id,
@@ -683,12 +704,24 @@ class StripeService
                 $schoolId = $workshopSession->school_id;
             }
         }
+        if ($sessionType === 'resource_program') {
+            $resourceProgramId = $item['price_data']['product_data']['metadata']['resource_program_id'] ?? $item['metadata']['resource_program_id'] ?? null;
+            if ($resourceProgramId) {
+                $resourceProgram = \App\Models\ResourceProgram::find($resourceProgramId);
+                if (!$resourceProgram) {
+                    Log::warning('Resource program not found', ['resource_program_id' => $resourceProgramId, 'session_id' => $sessionId]);
+                    return null;
+                }
+                // Resource programda schoolId zorunlu olmayabilir, ek bilgi gerekiyorsa buraya eklenebilir.
+            }
+        }
 
-        // log the program id, workshop session id, training camp session id, and school id
+        // log the program id, workshop session id, training camp session id, resource program id, and school id
         Log::info('createPayments', [
             'program_id' => $programId ?? null,
             'workshop_session_id' => $workshopSessionId ?? null,
             'training_camp_session_id' => $trainingCampSessionId ?? null,
+            'resource_program_id' => $resourceProgramId ?? null,
             'school_id' => $schoolId ?? null,
         ]);
 
@@ -696,6 +729,7 @@ class StripeService
             'program_id' => $programId,
             'workshop_session_id' => $workshopSessionId ?? null,
             'training_camp_session_id' => $trainingCampSessionId ?? null,
+            'resource_program_id' => $resourceProgramId ?? null,
             'school_id' => $schoolId ?? null,
         ];
     }
@@ -712,18 +746,20 @@ class StripeService
 
             $planSessionId = $plan['session_id'] ?? null;
 
-            if ($planSessionId) {
-                $trainingCampSessionId = $paymentData['training_camp_session_id'] ?? null;
-                $workshopSessionId = $paymentData['workshop_session_id'] ?? null;
+            $trainingCampSessionId = $paymentData['training_camp_session_id'] ?? null;
+            $workshopSessionId = $paymentData['workshop_session_id'] ?? null;
+            $resourceProgramId = $paymentData['resource_program_id'] ?? null;
 
+            if ($planSessionId) {
                 if ($trainingCampSessionId && (string) $planSessionId === (string) $trainingCampSessionId) {
                     return $plan;
                 }
-
                 if ($workshopSessionId && (string) $planSessionId === (string) $workshopSessionId) {
                     return $plan;
                 }
-
+                if ($resourceProgramId && (string) $planSessionId === (string) $resourceProgramId) {
+                    return $plan;
+                }
                 continue;
             }
 
@@ -805,6 +841,41 @@ class StripeService
             }
         } catch (\Exception $e) {
             Log::error('Failed to create training camp registration or send email', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Create resource program registration and send email with unique code
+     */
+    public function createResourceProgramRegistrationAndSendEmail(Payment $payment): void
+    {
+        try {
+            $registration = \App\Models\UserResourceProgramRegistration::create([
+                'user_id' => $payment->user_id,
+                'resource_program_id' => $payment->resource_program_id,
+                'guest_email' => $payment->guest_email,
+                'guest_name' => $payment->guest_name,
+                'payment_id' => $payment->id
+            ]);
+
+            $recipientEmail = $payment->user_id ? $payment->user->email : $payment->guest_email;
+            if ($recipientEmail) {
+                \Mail::to($recipientEmail)->send(new \App\Mail\ResourceProgramRegistrationMail($registration));
+                \Log::info('Resource program registration email sent', [
+                    'registration_id' => $registration->id,
+                    'email' => $recipientEmail,
+                ]);
+            } else {
+                \Log::warning('No email address found for resource program registration', [
+                    'registration_id' => $registration->id,
+                    'payment_id' => $payment->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to create resource program registration or send email', [
                 'payment_id' => $payment->id,
                 'error' => $e->getMessage(),
             ]);

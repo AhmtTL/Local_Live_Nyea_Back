@@ -145,4 +145,12 @@ class Payment extends Model
     {
         $this->update(['status' => 'processing']);
     }
+
+    /**
+     * Get the resource session this payment is for (if applicable)
+     */
+    public function resourceSession(): BelongsTo
+    {
+        return $this->belongsTo(ResourceSession::class);
+    }
 }
