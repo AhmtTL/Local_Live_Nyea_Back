@@ -54,6 +54,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/training-camp-sessions/{trainingCampSession}', [TrainingCampSessionController::class, 'show']);
     Route::get('/training-camp-sessions/programs/{programSlug}', [TrainingCampSessionController::class, 'byProgram']);
 
+    // Public resource session routes
+    Route::get('/resource-sessions', [\App\Http\Controllers\Api\ResourceSessionController::class, 'index']);
+    Route::get('/resource-sessions/{resourceSession}', [\App\Http\Controllers\Api\ResourceSessionController::class, 'show']);
+
     // Contact form
     Route::post('/contact', [ContactController::class, 'store']);
 
@@ -84,6 +88,11 @@ Route::prefix('v1')->middleware('auth:api')->group(function () {
 
     // Training camp session booking (requires authentication)
     Route::post('/training-camp-sessions/{trainingCampSession}/book', [TrainingCampSessionController::class, 'book']);
+
+    // Resource session CRUD (admin/dev only)
+    Route::post('/resource-sessions', [\App\Http\Controllers\Api\ResourceSessionController::class, 'store']);
+    Route::put('/resource-sessions/{resourceSession}', [\App\Http\Controllers\Api\ResourceSessionController::class, 'update']);
+    // Route::delete('/resource-sessions/{resourceSession}', [\App\Http\Controllers\Api\ResourceSessionController::class, 'destroy']); // Uncomment if you want to allow deletion
 
     Route::get('/user-programs', [ProgramController::class, 'userPrograms']);
 

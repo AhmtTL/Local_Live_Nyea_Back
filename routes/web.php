@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\WorkshopRegistrationController as AdminWorkshopRe
 use App\Http\Controllers\Admin\TrainingCampRegistrationController as AdminTrainingCampRegistrationController;
 use App\Http\Controllers\Admin\RegistrationController as AdminRegistrationController;
 use App\Http\Controllers\Admin\ImageController;
+use App\Http\Controllers\Admin\ResourceSessionController as AdminResourceSessionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -136,6 +137,13 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
         ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
     Route::delete('images/delete', [ImageController::class, 'delete'])->name('images.delete');
     Route::get('images/test', [ImageController::class, 'test'])->name('images.test')->withoutMiddleware(['auth', 'verified', 'admin']);
+
+    // Resource Session Management
+    Route::resource('resource-sessions', AdminResourceSessionController::class);
+    Route::post('resource-sessions/{resourceSession}/duplicate', [AdminResourceSessionController::class, 'duplicate'])
+        ->name('resource-sessions.duplicate');
+    Route::post('resource-sessions/{resourceSession}/toggle-publish', [AdminResourceSessionController::class, 'togglePublish'])
+        ->name('resource-sessions.toggle-publish');
 });
 
 require __DIR__ . '/auth.php';

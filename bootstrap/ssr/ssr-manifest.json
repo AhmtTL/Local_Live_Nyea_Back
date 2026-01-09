@@ -7,11 +7,11 @@
     "/build/assets/useCrud-DSDajlI3.js"
   ],
   "resources/js/Components/Admin/PaymentExportModal.vue": [
-    "/build/assets/Index-m11BSK0K.js",
+    "/build/assets/Index-jivGoAXR.js",
     "/build/assets/Index-DIF-O5JF.css"
   ],
   "resources/js/Components/Admin/PaymentExportModal.vue?vue&type=style&index=0&scoped=ffa8bd68&lang.css": [
-    "/build/assets/Index-m11BSK0K.js",
+    "/build/assets/Index-jivGoAXR.js",
     "/build/assets/Index-DIF-O5JF.css"
   ],
   "resources/js/Components/Admin/SearchFilter.vue": [
@@ -66,7 +66,7 @@
     "/build/assets/TextInput-BEWjE_Xr.js"
   ],
   "resources/js/Composables/useAdminLayout.js": [
-    "/build/assets/useAdminLayout-KyMrG-Br.js"
+    "/build/assets/useAdminLayout-b70BBPZG.js"
   ],
   "resources/js/Composables/useCrud.js": [
     "/build/assets/useCrud-DSDajlI3.js"
@@ -78,7 +78,7 @@
     "/build/assets/useServerSearch-C-KcNfn2.js"
   ],
   "resources/js/Layouts/AdminLayout.vue": [
-    "/build/assets/AdminLayout-VxMcYlr7.js"
+    "/build/assets/AdminLayout-EcLlKyRZ.js"
   ],
   "resources/js/Layouts/AuthenticatedLayout.vue": [
     "/build/assets/AuthenticatedLayout-BX2Fm_h0.js"
@@ -87,101 +87,113 @@
     "/build/assets/BaseLayout-DdSYcoSB.js"
   ],
   "resources/js/Layouts/DevLayout.vue": [
-    "/build/assets/useAdminLayout-KyMrG-Br.js"
+    "/build/assets/useAdminLayout-b70BBPZG.js"
   ],
   "resources/js/Layouts/GuestLayout.vue": [
     "/build/assets/GuestLayout-CMIxGRkh.js"
   ],
   "resources/js/Layouts/SchoolLayout.vue": [
-    "/build/assets/useAdminLayout-KyMrG-Br.js"
+    "/build/assets/useAdminLayout-b70BBPZG.js"
   ],
   "resources/js/Pages/Admin/Dashboard.vue": [
-    "/build/assets/Dashboard-BchlEGRM.js"
+    "/build/assets/Dashboard-DepKVGvb.js"
   ],
   "resources/js/Pages/Admin/DiscountCodes/Create.vue": [
-    "/build/assets/Create-q-l_8Exa.js"
+    "/build/assets/Create-BACz7GxI.js"
   ],
   "resources/js/Pages/Admin/DiscountCodes/Edit.vue": [
-    "/build/assets/Edit-JlL20vlY.js"
+    "/build/assets/Edit-yk8A8gEd.js"
   ],
   "resources/js/Pages/Admin/DiscountCodes/Index.vue": [
-    "/build/assets/Index-iHR7K50C.js"
+    "/build/assets/Index-DDPkxbPF.js"
   ],
   "resources/js/Pages/Admin/DiscountCodes/Show.vue": [
-    "/build/assets/Show-CvAU7dHG.js"
+    "/build/assets/Show-BsQc3n3Y.js"
   ],
   "resources/js/Pages/Admin/Influencers/Index.vue": [
-    "/build/assets/Index-CWLcBx8t.js"
+    "/build/assets/Index-C8iREqCR.js"
   ],
   "resources/js/Pages/Admin/Influencers/Show.vue": [
-    "/build/assets/Show-D7cHAgwK.js"
+    "/build/assets/Show-CMaxRdJL.js"
   ],
   "resources/js/Pages/Admin/Payments/Index.vue": [
-    "/build/assets/Index-m11BSK0K.js",
+    "/build/assets/Index-jivGoAXR.js",
     "/build/assets/Index-DIF-O5JF.css"
   ],
   "resources/js/Pages/Admin/Payments/Show.vue": [
-    "/build/assets/Show-2EjzjnHI.js"
+    "/build/assets/Show-BPBQ23Jo.js"
   ],
   "resources/js/Pages/Admin/Programs/Create.vue": [
-    "/build/assets/Create-C-niyVQ-.js"
+    "/build/assets/Create-BXl0WU3o.js"
   ],
   "resources/js/Pages/Admin/Programs/Edit.vue": [
-    "/build/assets/Edit-7EQjKjJW.js"
+    "/build/assets/Edit-DrEPgBQf.js"
   ],
   "resources/js/Pages/Admin/Programs/Index.vue": [
-    "/build/assets/Index-CTJNnxfR.js"
+    "/build/assets/Index-CGXb7dZ_.js"
   ],
   "resources/js/Pages/Admin/Programs/Show.vue": [
-    "/build/assets/Show-2ExPFznn.js"
+    "/build/assets/Show-DsGMsc4H.js"
   ],
   "resources/js/Pages/Admin/Referrals/Index.vue": [
-    "/build/assets/Index-DloqXPnx.js"
+    "/build/assets/Index-_N175X4k.js"
   ],
   "resources/js/Pages/Admin/Referrals/Show.vue": [
-    "/build/assets/Show-IgmBOtxE.js"
+    "/build/assets/Show-CA3u-Vgy.js"
   ],
   "resources/js/Pages/Admin/Registrations/Index.vue": [
-    "/build/assets/Index-DFQASr8K.js"
+    "/build/assets/Index-B3Dpb1hA.js"
+  ],
+  "resources/js/Pages/Admin/ResourceSessions/Create.vue": [
+    "/build/assets/Create-BacsdIIe.js"
+  ],
+  "resources/js/Pages/Admin/ResourceSessions/Edit.vue": [
+    "/build/assets/Edit-CrB4dtNY.js"
+  ],
+  "resources/js/Pages/Admin/ResourceSessions/Index.vue": [
+    "/build/assets/Index-DGZeGexX.js"
+  ],
+  "resources/js/Pages/Admin/ResourceSessions/Show.vue": [
+    "/build/assets/Show-oO_WzvXd.js"
   ],
   "resources/js/Pages/Admin/TrainingCampSessions/Create.vue": [
-    "/build/assets/Create-C_Nnaoq7.js"
+    "/build/assets/Create-CB6ZucTJ.js"
   ],
   "resources/js/Pages/Admin/TrainingCampSessions/Edit.vue": [
-    "/build/assets/Edit-BM3hlwVS.js"
+    "/build/assets/Edit-BF2lEL1X.js"
   ],
   "resources/js/Pages/Admin/TrainingCampSessions/Index.vue": [
-    "/build/assets/Index-_CfyRX7-.js"
+    "/build/assets/Index-4g9l4C8Q.js"
   ],
   "resources/js/Pages/Admin/TrainingCampSessions/Show.vue": [
-    "/build/assets/Show-C4JYA2IT.js"
+    "/build/assets/Show-DWpptQHE.js"
   ],
   "resources/js/Pages/Admin/Users/Create.vue": [
-    "/build/assets/Create-B6xLcLKF.js"
+    "/build/assets/Create-Dpp_jO_H.js"
   ],
   "resources/js/Pages/Admin/Users/Edit.vue": [
-    "/build/assets/Edit-DimBfMcZ.js"
+    "/build/assets/Edit-VPHBYHlv.js"
   ],
   "resources/js/Pages/Admin/Users/Index.vue": [
-    "/build/assets/Index-D88ISn-r.js"
+    "/build/assets/Index-Chi5KJtr.js"
   ],
   "resources/js/Pages/Admin/Users/Show.vue": [
-    "/build/assets/Show-C3dkzND6.js"
+    "/build/assets/Show-CD69KkWe.js"
   ],
   "resources/js/Pages/Admin/WorkshopRegistrations/Index.vue": [
-    "/build/assets/Index-Bc5BxNef.js"
+    "/build/assets/Index-UyqyiuwB.js"
   ],
   "resources/js/Pages/Admin/WorkshopSessions/Create.vue": [
-    "/build/assets/Create-BO-a2Leo.js"
+    "/build/assets/Create-BKEHQL7R.js"
   ],
   "resources/js/Pages/Admin/WorkshopSessions/Edit.vue": [
-    "/build/assets/Edit-BkAFo2vx.js"
+    "/build/assets/Edit-CEeCPD1n.js"
   ],
   "resources/js/Pages/Admin/WorkshopSessions/Index.vue": [
-    "/build/assets/Index-BEsPMTfv.js"
+    "/build/assets/Index-DZZPCPCy.js"
   ],
   "resources/js/Pages/Admin/WorkshopSessions/Show.vue": [
-    "/build/assets/Show-Br6QkgXf.js"
+    "/build/assets/Show-DTldFNKy.js"
   ],
   "resources/js/Pages/Auth/ConfirmPassword.vue": [
     "/build/assets/ConfirmPassword-BZYttGMD.js"
